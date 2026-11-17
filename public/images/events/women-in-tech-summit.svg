@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Women in Tech Summit">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#164e63"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <circle cx="690" cy="80" r="150" fill="#ffffff" opacity="0.08"/>
+  <circle cx="110" cy="430" r="180" fill="#ffffff" opacity="0.06"/>
+  <text x="60" y="245" fill="#ffffff" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="44" font-weight="700">Women in Tech Summit</text>
+  <text x="60" y="295" fill="#a5f3fc" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="24">Technology</text>
+</svg>
