@@ -1,24 +1,36 @@
 /**
- * Data access layer for event management (create flow).
+ * Data access layer for the Events page (frontend-only).
  *
- * Follows the same contract as `dashboardService.ts`: every function is
- * `async` and returns a `Promise`, so swapping the in-memory store for
- * `fetch(...)` later does not touch any UI component.
+ * There is no backend: every function reads or updates in-memory arrays,
+ * so swapping the bodies for `fetch(...)` later does not touch any UI
+ * component. Follows the same async contract as `dashboardService.ts`.
  *
- * Created events live in a separate store from the dashboard seed data so
- * this feature cannot change any Dashboard figures.
+ * `listEvents` merges the seed events with anything created in this
+ * session. Created events live in their own store (the seed arrays are
+ * never mutated), so this feature cannot change any Dashboard figure.
  */
+import { draftEvents, events } from '../data/seed';
 import type { CreateEventInput, EventItem } from '../types/event';
 import { buildEventItem } from '../utils/eventForm';
 
-/** In-memory store standing in for the backend's event collection. */
+/** Events created during this session (frontend-only, never persisted). */
 const createdEvents: EventItem[] = [];
 
 /** Simulated network latency so loading states are visible in the UI. */
 const MOCK_LATENCY_MS = 600;
 
 /**
- * Persists a new event and returns the stored `EventItem`.
+ * All temporary frontend events for the Events page listing: the seed
+ * events plus drafts plus anything created in this session.
+ */
+export async function listEvents(): Promise<EventItem[]> {
+  return [...events, ...draftEvents, ...createdEvents];
+}
+
+/**
+ * Builds a new event from the Create Event form and remembers it for this
+ * session. The caller adds the returned event to its own state so the
+ * listing and the statistics update immediately.
  *
  * @throws if the request is interrupted (never with the mock store).
  */

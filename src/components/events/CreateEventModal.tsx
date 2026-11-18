@@ -2,7 +2,7 @@ import { CheckCircle2, ChevronDown, ImagePlus, Loader2, Plus, X } from 'lucide-r
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 
 import { createEvent } from '../../services/eventsService';
-import type { EventCategory } from '../../types/event';
+import type { EventCategory, EventItem } from '../../types/event';
 import {
   EMPTY_EVENT_FORM,
   toCreateEventInput,
@@ -33,8 +33,8 @@ const fieldClass = (invalid?: string): string =>
 interface CreateEventModalProps {
   /** Closes the modal (close icon, Cancel, Escape key or backdrop click). */
   onClose: () => void;
-  /** Reports the created event's title for page-level success feedback. */
-  onSuccess: (eventTitle: string) => void;
+  /** Reports the created event so the page can add it to its listing. */
+  onSuccess: (event: EventItem) => void;
 }
 
 /** Inline validation message, linked to its field via `aria-describedby`. */
@@ -214,7 +214,7 @@ export function CreateEventModal({ onClose, onSuccess }: CreateEventModalProps) 
         image: imagePreview ?? input.image,
       });
       setSuccessTitle(created.title);
-      onSuccess(created.title);
+      onSuccess(created);
     } catch {
       setSubmitError('Something went wrong while creating the event. Please try again.');
     } finally {
@@ -242,7 +242,7 @@ export function CreateEventModal({ onClose, onSuccess }: CreateEventModalProps) 
             </h2>
             <p id="create-event-description" className="mt-0.5 text-sm text-slate-500">
               {successTitle
-                ? 'Your event has been saved successfully.'
+                ? 'Your event has been added to your events.'
                 : 'Fill in the details below to set up your next event.'}
             </p>
           </div>

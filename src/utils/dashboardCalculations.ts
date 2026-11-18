@@ -127,7 +127,7 @@ export function calculateTicketTotals(events: readonly EventItem[]): {
 export function countEventsByStatus(
   events: readonly EventItem[],
 ): Record<EventStatus, number> {
-  const counts: Record<EventStatus, number> = { upcoming: 0, active: 0, completed: 0 };
+  const counts: Record<EventStatus, number> = { upcoming: 0, active: 0, completed: 0, draft: 0 };
   for (const event of events) {
     counts[event.status] += 1;
   }

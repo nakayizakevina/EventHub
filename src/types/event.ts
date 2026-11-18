@@ -2,8 +2,13 @@
  * Domain model for an event hosted on the EventHub platform.
  */
 
-/** Lifecycle status of an event. */
-export type EventStatus = 'upcoming' | 'active' | 'completed';
+/**
+ * Lifecycle status of an event.
+ *
+ * `draft` is an unpublished event managed on the Events page; the
+ * dashboard seed data never contains drafts.
+ */
+export type EventStatus = 'upcoming' | 'active' | 'completed' | 'draft';
 
 /** High-level grouping used for filtering and reporting. */
 export type EventCategory =

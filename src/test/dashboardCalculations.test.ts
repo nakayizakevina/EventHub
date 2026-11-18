@@ -130,8 +130,9 @@ describe('countEventsByStatus', () => {
       makeEvent({ id: 'e2', status: 'active' }),
       makeEvent({ id: 'e3', status: 'completed' }),
       makeEvent({ id: 'e4', status: 'upcoming' }),
+      makeEvent({ id: 'e5', status: 'draft' }),
     ]);
-    expect(counts).toEqual({ upcoming: 2, active: 1, completed: 1 });
+    expect(counts).toEqual({ upcoming: 2, active: 1, completed: 1, draft: 1 });
   });
 });
 
