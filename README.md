@@ -56,12 +56,18 @@ eventhub-dashboard/
 │   ├── components/
 │   │   ├── layout/            # AppLayout, Sidebar, Header, MobileNavigation
 │   │   ├── dashboard/         # SummaryCards, charts, FeaturedEvent, EventCalendar, AllEvents
+│   │   ├── events/            # EventsHeader, CreateEventModal, stats/filters/cards/grid, details dialog
 │   │   ├── bookings/          # BookingsStats, BookingsTable, BookingFilters, BookingDetails, BookingStatusBadge
 │   │   └── shared/            # SectionCard, Pill (reusable presentational components)
 │   ├── data/
 │   │   └── seed.ts            # Mock events + bookings (stands in for the API)
 │   ├── pages/
 │   │   ├── DashboardPage.tsx  # Dashboard overview (all sections)
+│   │   ├── EventsPage.tsx     # Events listing (stats, search/filters, cards)
+│   │   └── BookingsPage.tsx   # Placeholder page
+│   ├── services/
+│   │   ├── dashboardService.ts# Data access layer (swap seed → HTTP here)
+│   │   └── eventsService.ts   # Events page data (frontend-only, in-memory)
 │   │   ├── EventsPage.tsx     # Placeholder page
 │   │   └── BookingsPage.tsx   # Bookings overview, filters, table and details dialog
 │   ├── services/
@@ -74,6 +80,7 @@ eventhub-dashboard/
 │   │   └── dashboard.ts       # Read models (DTOs) returned by the service
 │   ├── utils/
 │   │   ├── dashboardCalculations.ts # Pure business calculations
+│   │   └── eventList.ts       # Events page statistics, filters, ordering
 │   │   └── bookingCalculations.ts   # Pure bookings calculations (rows, summary, filters)
 │   ├── test/                  # Unit tests (Vitest)
 │   ├── App.tsx                # Route table (shared AppLayout + nested pages)
@@ -120,6 +127,8 @@ Client-side routing via React Router (`src/App.tsx`):
 | Route        | Page                        | Notes                                    |
 | ------------ | --------------------------- | ---------------------------------------- |
 | `/dashboard` | `DashboardPage`             | Full design-reference dashboard          |
+| `/events`    | `EventsPage`                | Stats, search/filters, event card grid   |
+| `/bookings`  | `BookingsPage`              | Placeholder — "This is a booking page"   |
 | `/events`    | `EventsPage`                | Placeholder — "This is a events page"    |
 | `/bookings`  | `BookingsPage`              | Bookings overview, filters, table, details dialog |
 | `/` and any unknown path | → `/dashboard` | `Navigate` with `replace`       |
@@ -221,6 +230,11 @@ Tests live in `src/test/` and cover:
   always cover the full ticket pool.
 - `dashboardService.test.ts` — service contract: async API, summary consistency,
   ordering and limits (including `getTicketSalesByStatus` and `getFeaturedEvent`).
+- `eventForm.test.ts` — Create Event form validation and payload mapping.
+- `eventList.test.ts` — Events page statistics, title/status/category filtering
+  and card-grid ordering.
+
+**76 tests**, all passing.
 - `bookingCalculations.test.ts` — bookings logic: payment → display status mapping,
   booking/event joins, newest-first ordering, summary counts, and
   search/filter behaviour (including combined AND filtering).

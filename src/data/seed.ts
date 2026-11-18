@@ -15,6 +15,8 @@
  *   booking figures; only `paid` bookings count towards revenue.
  * - Every booking's `eventId` references an event in `events` (enforced by
  *   the seed integrity tests).
+ * - `draftEvents` are unpublished events used only by the Events page; the
+ *   dashboard never reads them, so its figures are unaffected.
  */
 import { addDays, setHours, setMinutes, subDays } from 'date-fns';
 
@@ -167,6 +169,46 @@ export const events: EventItem[] = [
     image: '/images/events/accra-style-weekend.svg',
     description:
       'Runway shows, designer markets and style talks celebrating Ghanaian fashion.',
+  },
+];
+
+/**
+ * Unpublished (draft) events for the Events page listing.
+ *
+ * Kept separate from `events` so the dashboard — which only ever reads
+ * `events` — never shows them. The Events page combines the two arrays as
+ * its temporary frontend dataset.
+ */
+export const draftEvents: EventItem[] = [
+  {
+    id: 'evt-draft-01',
+    title: 'Kampala Jazz & Brunch',
+    category: 'Music',
+    date: isoDateDaysFromNow(21, 12, 0),
+    endDate: isoDateDaysFromNow(21, 17, 0),
+    venue: 'Ndere Cultural Centre, Kampala',
+    eventType: 'Physical',
+    status: 'draft',
+    ticketCapacity: 0,
+    ticketsSold: 0,
+    image: '/images/events/kampala-jazz-brunch.svg',
+    description:
+      'A lazy Sunday of live jazz, brunch platters and acoustic sets in Kampala.',
+  },
+  {
+    id: 'evt-draft-02',
+    title: 'African FinTech Summit 2026',
+    category: 'Technology',
+    date: isoDateDaysFromNow(35, 9, 0),
+    endDate: isoDateDaysFromNow(35, 17, 0),
+    venue: 'Virtual — join link shared on registration',
+    eventType: 'Online',
+    status: 'draft',
+    ticketCapacity: 0,
+    ticketsSold: 0,
+    image: '/images/events/african-fintech-summit.svg',
+    description:
+      'A virtual summit on payments, lending and the future of African fintech.',
   },
 ];
 

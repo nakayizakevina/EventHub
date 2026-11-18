@@ -2,8 +2,13 @@
  * Domain model for an event hosted on the EventHub platform.
  */
 
-/** Lifecycle status of an event. */
-export type EventStatus = 'upcoming' | 'active' | 'completed';
+/**
+ * Lifecycle status of an event.
+ *
+ * `draft` is an unpublished event managed on the Events page; the
+ * dashboard seed data never contains drafts.
+ */
+export type EventStatus = 'upcoming' | 'active' | 'completed' | 'draft';
 
 /** High-level grouping used for filtering and reporting. */
 export type EventCategory =
@@ -12,6 +17,9 @@ export type EventCategory =
   | 'Fashion'
   | 'Technology'
   | 'Food & Culinary';
+
+/** Delivery mode of an event (chosen when the event is created). */
+export type EventType = 'Physical' | 'Online';
 
 /**
  * A single event.
@@ -37,4 +45,29 @@ export interface EventItem {
   image: string;
   /** Short marketing blurb shown on featured/event cards. */
   description?: string;
+  /** ISO 8601 date-time of the event end (set when created via the form). */
+  endDate?: string;
+  /** Physical or Online — set when created via the form. */
+  eventType?: EventType;
+}
+
+/**
+ * Payload accepted by `createEvent` for events created through the UI.
+ *
+ * Dates are already ISO 8601 strings (converted from the `datetime-local`
+ * form values before submission), so the service stays presentation-agnostic.
+ */
+export interface CreateEventInput {
+  title: string;
+  description: string;
+  category: EventCategory;
+  /** ISO 8601 date-time of the event start. */
+  start: string;
+  /** ISO 8601 date-time of the event end (always after `start`). */
+  end: string;
+  /** Venue name for physical events, meeting link/place for online ones. */
+  location: string;
+  eventType: EventType;
+  /** Resolved cover image — an object URL for uploads, or a fallback URI. */
+  image: string;
 }
