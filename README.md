@@ -57,6 +57,7 @@ eventhub-dashboard/
 │   │   ├── layout/            # AppLayout, Sidebar, Header, MobileNavigation
 │   │   ├── dashboard/         # SummaryCards, charts, FeaturedEvent, EventCalendar, AllEvents
 │   │   ├── events/            # EventsHeader, CreateEventModal, stats/filters/cards/grid, details dialog
+│   │   ├── bookings/          # BookingsStats, BookingsTable, BookingFilters, BookingDetails, BookingStatusBadge
 │   │   └── shared/            # SectionCard, Pill (reusable presentational components)
 │   ├── data/
 │   │   └── seed.ts            # Mock events + bookings (stands in for the API)
@@ -67,13 +68,20 @@ eventhub-dashboard/
 │   ├── services/
 │   │   ├── dashboardService.ts# Data access layer (swap seed → HTTP here)
 │   │   └── eventsService.ts   # Events page data (frontend-only, in-memory)
+│   │   ├── EventsPage.tsx     # Placeholder page
+│   │   └── BookingsPage.tsx   # Bookings overview, filters, table and details dialog
+│   ├── services/
+│   │   ├── dashboardService.ts# Dashboard data access layer (swap seed → HTTP here)
+│   │   └── bookingService.ts  # Bookings data access layer (same async contract)
 │   ├── types/
 │   │   ├── event.ts           # Event model, EventStatus, EventCategory
 │   │   ├── booking.ts         # Booking model, PaymentStatus
+│   │   ├── bookings.ts        # Bookings read models (BookingRow, BookingSummary, filters)
 │   │   └── dashboard.ts       # Read models (DTOs) returned by the service
 │   ├── utils/
 │   │   ├── dashboardCalculations.ts # Pure business calculations
 │   │   └── eventList.ts       # Events page statistics, filters, ordering
+│   │   └── bookingCalculations.ts   # Pure bookings calculations (rows, summary, filters)
 │   ├── test/                  # Unit tests (Vitest)
 │   ├── App.tsx                # Route table (shared AppLayout + nested pages)
 │   ├── main.tsx               # Entry point
@@ -100,12 +108,14 @@ Service layer (src/services/dashboardService.ts)
 Seed data (src/data/seed.ts)  +  Calculations (src/utils/dashboardCalculations.ts)
 ```
 
-- **`dashboardService.ts`** is the only module that reads seed data. Every function is
+- **`dashboardService.ts`** and **`bookingService.ts`** are the only modules that read seed
+  data (dashboard and bookings respectively). Every function is
   `async` and returns a `Promise`, exactly like a future REST/GraphQL API would.
   Replacing the seed with `fetch(...)` calls later only changes these function bodies —
   no UI component needs to be rewritten.
-- **`dashboardCalculations.ts`** holds all business logic as pure functions (revenue,
-  occupancy, monthly grouping, rankings). Components never compute dashboard figures
+- **`dashboardCalculations.ts`** and **`bookingCalculations.ts`** hold all business logic as
+  pure functions (revenue, occupancy, monthly grouping, rankings; booking rows,
+  summaries and filters). Components never compute dashboard figures
   themselves, so no number is ever hardcoded in more than one place.
 - **`types/dashboard.ts`** defines the read models (DTOs) that flow from the service to
   the UI, keeping the seed models free of presentation concerns.
@@ -119,6 +129,8 @@ Client-side routing via React Router (`src/App.tsx`):
 | `/dashboard` | `DashboardPage`             | Full design-reference dashboard          |
 | `/events`    | `EventsPage`                | Stats, search/filters, event card grid   |
 | `/bookings`  | `BookingsPage`              | Placeholder — "This is a booking page"   |
+| `/events`    | `EventsPage`                | Placeholder — "This is a events page"    |
+| `/bookings`  | `BookingsPage`              | Bookings overview, filters, table, details dialog |
 | `/` and any unknown path | → `/dashboard` | `Navigate` with `replace`       |
 
 All three routes render inside a single shared `AppLayout` (React Router layout route
@@ -171,6 +183,11 @@ The interface is named `EventItem` so it never shadows the DOM `Event` global ty
 | `paymentStatus`   | `PaymentStatus` | `'paid' \| 'pending' \| 'failed'`         |
 | `createdAt`       | `string`        | ISO 8601 timestamp                       |
 
+On the Bookings screens this payment status is mapped to a display status
+(`paid → confirmed`, `pending → pending`, `failed → cancelled`) by
+`bookingCalculations.toDisplayStatus`. The mapping lives at the presentation
+boundary only — the domain model and all revenue rules are unchanged.
+
 ## Seed Data Assumptions & Data Rules
 
 All dashboard figures derive from `src/data/seed.ts` — nothing is hardcoded in
@@ -218,6 +235,11 @@ Tests live in `src/test/` and cover:
   and card-grid ordering.
 
 **76 tests**, all passing.
+- `bookingCalculations.test.ts` — bookings logic: payment → display status mapping,
+  booking/event joins, newest-first ordering, summary counts, and
+  search/filter behaviour (including combined AND filtering).
+
+**71 tests**, all passing.
 
 ```bash
 npm test
