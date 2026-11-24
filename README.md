@@ -7,7 +7,7 @@ authentication or payment integration.
 
 > **Status:** complete. The data layer, business calculations, tooling, tests, the
 > full dashboard UI (matching the supplied design reference) and client-side routing
-> across `/dashboard`, `/events` and `/bookings` are all implemented and verified.
+> across `/dashboard`, `/events`, `/bookings` and `/reports` are all implemented and verified.
 
 ## Technology Stack
 
@@ -58,13 +58,15 @@ eventhub-dashboard/
 │   │   ├── dashboard/         # SummaryCards, charts, FeaturedEvent, EventCalendar, AllEvents
 │   │   ├── events/            # EventsHeader, CreateEventModal, stats/filters/cards/grid, details dialog
 │   │   ├── bookings/          # BookingsStats, BookingsTable, BookingFilters, BookingDetails, BookingStatusBadge
+│   │   ├── reports/           # ReportFilters, ReportSummaryCards, trend chart, category + event performance
 │   │   └── shared/            # SectionCard, Pill (reusable presentational components)
 │   ├── data/
 │   │   └── seed.ts            # Mock events + bookings (stands in for the API)
 │   ├── pages/
 │   │   ├── DashboardPage.tsx  # Dashboard overview (all sections)
 │   │   ├── EventsPage.tsx     # Events listing (stats, search/filters, cards)
-│   │   └── BookingsPage.tsx   # Placeholder page
+│   │   ├── BookingsPage.tsx   # Bookings overview, filters, table and details dialog
+│   │   └── ReportsPage.tsx    # Reports overview (filters, KPIs, trends, breakdowns)
 │   ├── services/
 │   │   ├── dashboardService.ts# Data access layer (swap seed → HTTP here)
 │   │   └── eventsService.ts   # Events page data (frontend-only, in-memory)
@@ -72,16 +74,19 @@ eventhub-dashboard/
 │   │   └── BookingsPage.tsx   # Bookings overview, filters, table and details dialog
 │   ├── services/
 │   │   ├── dashboardService.ts# Dashboard data access layer (swap seed → HTTP here)
-│   │   └── bookingService.ts  # Bookings data access layer (same async contract)
+│   │   ├── bookingService.ts  # Bookings data access layer (same async contract)
+│   │   └── reportService.ts   # Reports data access layer (applies period/category scope)
 │   ├── types/
 │   │   ├── event.ts           # Event model, EventStatus, EventCategory
 │   │   ├── booking.ts         # Booking model, PaymentStatus
 │   │   ├── bookings.ts        # Bookings read models (BookingRow, BookingSummary, filters)
-│   │   └── dashboard.ts       # Read models (DTOs) returned by the service
+│   │   ├── dashboard.ts       # Read models (DTOs) returned by the service
+│   │   └── reports.ts         # Reports read models (summary, trends, category/event rows)
 │   ├── utils/
 │   │   ├── dashboardCalculations.ts # Pure business calculations
 │   │   └── eventList.ts       # Events page statistics, filters, ordering
 │   │   └── bookingCalculations.ts   # Pure bookings calculations (rows, summary, filters)
+│   │   └── reportCalculations.ts    # Pure report calculations (scope, trends, rankings)
 │   ├── test/                  # Unit tests (Vitest)
 │   ├── App.tsx                # Route table (shared AppLayout + nested pages)
 │   ├── main.tsx               # Entry point
@@ -131,6 +136,7 @@ Client-side routing via React Router (`src/App.tsx`):
 | `/bookings`  | `BookingsPage`              | Placeholder — "This is a booking page"   |
 | `/events`    | `EventsPage`                | Placeholder — "This is a events page"    |
 | `/bookings`  | `BookingsPage`              | Bookings overview, filters, table, details dialog |
+| `/reports`   | `ReportsPage`               | KPIs, registration/attendance trends, category and event performance |
 | `/` and any unknown path | → `/dashboard` | `Navigate` with `replace`       |
 
 All three routes render inside a single shared `AppLayout` (React Router layout route
@@ -238,8 +244,12 @@ Tests live in `src/test/` and cover:
 - `bookingCalculations.test.ts` — bookings logic: payment → display status mapping,
   booking/event joins, newest-first ordering, summary counts, and
   search/filter behaviour (including combined AND filtering).
+- `reportCalculations.test.ts` — report scoping (period/category), trend bucketing,
+  summary building, and category/event rankings.
+- `reportService.test.ts` — report service contract, filter effects and
+  cross-section consistency.
 
-**71 tests**, all passing.
+**119 tests**, all passing.
 
 ```bash
 npm test

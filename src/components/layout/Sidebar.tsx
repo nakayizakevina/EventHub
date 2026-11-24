@@ -22,7 +22,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Events', href: '/events', icon: CalendarDays, enabled: true },
   { label: 'Bookings', href: '/bookings', icon: Ticket, enabled: true },
   { label: 'Attendees', href: '/attendees', icon: Users, enabled: false },
-  { label: 'Reports', href: '/reports', icon: BarChart3, enabled: false },
+  { label: 'Reports', href: '/reports', icon: BarChart3, enabled: true },
   { label: 'Settings', href: '/settings', icon: Settings, enabled: false },
 ];
 

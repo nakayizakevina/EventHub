@@ -4,6 +4,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { BookingsPage } from './pages/BookingsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { EventsPage } from './pages/EventsPage';
+import { ReportsPage } from './pages/ReportsPage';
 
 /**
  * Route table: every supported page renders inside the shared AppLayout
@@ -18,6 +19,7 @@ function App(): React.JSX.Element {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/bookings" element={<BookingsPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
         </Route>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
